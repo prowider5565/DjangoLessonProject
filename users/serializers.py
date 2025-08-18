@@ -1,26 +1,37 @@
 from rest_framework import serializers
+from django.db import models
 
 from users.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class Role(models.TextChoices):
+    Admin = "Admin", "Admin"
+    Teacher = "Teacher", "Teacher"
+
+
+class UserSerializer(serializers.Serializer):
     """
     Serializer for User model.
     This serializer can be extended to include fields as needed.
     """
 
-    # username = serializers.CharField(max_length=150)
-    # email = serializers.EmailField(max_length=254, required=True)
-    # first_name = serializers.CharField(max_length=30, required=False)
-    # last_name = serializers.CharField(max_length=150, required=False)
+    username = serializers.CharField(max_length=150)
+    email = serializers.EmailField(max_length=254, required=True)
+    first_name = serializers.CharField(max_length=30, required=False)
+    last_name = serializers.CharField(max_length=150, required=False)
 
-    class Meta:
-        model = User
-        fields = [
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "password",
-            "is_superuser",
-        ]
+    # class Meta:
+    #     model = User
+    #     fields = [
+    #         "username",
+    #         "email",
+    #         "first_name",
+    #         "last_name",
+    #         "password",
+    #         "is_superuser",
+    #     ]
+
+
+class WordSerializer(serializers.Serializer):
+    letter = serializers.CharField(required=True)
+    count = serializers.IntegerField(required=True)

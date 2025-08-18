@@ -1,36 +1,12 @@
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.generics import CreateAPIView
+from rest_framework.decorators import api_view, permission_classes
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework.permissions import IsAuthenticated
 
 from users.models import User
 from users.serializers import UserSerializer
-
-
-
-class EXampleAPIView(CreateAPIView):
-    serializer_class = UserSerializer
-    permission_classes = []
-    authentication_classes = []
-    queryset = User.objects.filter(is_active=True)
-    model = User
-    lookup_field = "username"
-    pagination_class = object
-    filterset_class = object
-
-    def get_queryset(self):
-        deleted= self.request.query_params.get("deleted", False)
-        return super().get_queryset().filter(is_active=deleted)
-
-
-    def post(self, request, *args, **kwargs):
-       return super().post(request, *args, **kwargs)
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-    
-    def perform_create(self, serializer):
-        return super().perform_create(serializer)
-
 
 
 # Function based
@@ -42,14 +18,60 @@ class EXampleAPIView(CreateAPIView):
         ListAPIView, CreateAPIView, ListCreateAPIView RetrieveAPIView, UpdateAPIView, DestroyAPIView
 """
 
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from users.models import User
+from users.serializers import UserSerializer
+
+
+@swagger_auto_schema(
+    method="post",
+    request_body=UserSerializer(many=False),
+    operation_description="Register a new user and return JWT tokens",
+    responses={
+        200: openapi.Response(
+            description="User registered successfully with JWT tokens",
+            examples={
+                "application/json": {
+                    "access": "ACCESS_TOKEN_HERE",
+                    "refresh": "REFRESH_TOKEN_HERE",
+                }
+            },
+        )
+    },
+)
 @api_view(["POST"])
 def register(request):
     user_data = UserSerializer(data=request.data)
     user_data.is_valid(raise_exception=True)
-    print(user_data.validated_data)
+
+    # Create user
     if user_data.validated_data.get("is_superuser", False):
-        User.objects.create_superuser(**user_data.validated_data)
+        user = User.objects.create_superuser(**user_data.validated_data)
     else:
-        User.objects.create_user(is_active=False, **user_data.validated_data)
-    return Response(data={"msg": "Hello, World!"}, status=status.HTTP_200_OK)
+        user = User.objects.create_user(**user_data.validated_data)
+
+    # Generate JWT tokens
+    refresh = RefreshToken.for_user(user)
+    tokens = {
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+    }
+
+    return Response(
+        data={"msg": "User registered successfully", "tokens": tokens},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_my_details(request):
+    user_details = request.user
+    user_serializer = UserSerializer(user_details).data
+    return Response(user_serializer)
