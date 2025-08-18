@@ -7,6 +7,7 @@ class User(AbstractUser):
     Custom user model that extends the default Django user model.
     You can add additional fields here if needed.
     """
+
     # Example of an additional field
     bio = models.TextField(blank=True, null=True)
 
@@ -14,5 +15,12 @@ class User(AbstractUser):
         return self.username
 
     class Meta:
-        db_table = "users"        
+        db_table = "users"
+
+
+class Address(models.Model):
+    user = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name="addresses"
+    )
+    city = models.CharField(max_length=300)
 
