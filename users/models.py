@@ -18,9 +18,9 @@ class User(AbstractUser):
         db_table = "users"
 
 
-class Address(models.Model):
-    user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE, related_name="addresses"
-    )
-    city = models.CharField(max_length=300)
+# class Address(models.Model):
+#     user = models.ForeignKey(
+#         to=User, on_delete=models.CASCADE, related_name="addresses"
+#     )
+#     city = models.CharField(max_length=300)
 
