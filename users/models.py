@@ -8,8 +8,11 @@ class User(AbstractUser):
     You can add additional fields here if needed.
     """
 
-    # Example of an additional field
+    username = models.CharField(max_length=120, unique=False)
     bio = models.TextField(blank=True, null=True)
+    email = models.EmailField(max_length=254, unique=True)
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "email"
 
     def __str__(self):
         return self.username
@@ -23,4 +26,3 @@ class User(AbstractUser):
 #         to=User, on_delete=models.CASCADE, related_name="addresses"
 #     )
 #     city = models.CharField(max_length=300)
-
