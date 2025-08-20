@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from users.managers import BaseUserManager
+
 
 class User(AbstractUser):
     """
@@ -8,14 +10,15 @@ class User(AbstractUser):
     You can add additional fields here if needed.
     """
 
-    username = models.CharField(max_length=120, unique=False)
+    username = models.CharField(max_length=120, unique=False, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
     email = models.EmailField(max_length=254, unique=True)
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "email"
+    objects = BaseUserManager()
 
     def __str__(self):
-        return self.username
+        return self.email
 
     class Meta:
         db_table = "users"
