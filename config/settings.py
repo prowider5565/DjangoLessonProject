@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -95,6 +96,12 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+JAZZMIN_SETTINGS = {
+    "site_title": "MyMDCard",
+    "site_header": "MyMDCard Panel",
+    "welcome_sign": "Welcome to MyMDCard Admin",
+    "copyright": "MyMDCard",
 }
 
 
